@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { ShortenComponent } from './shorten/shorten.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -11,6 +12,7 @@ import { ShortenComponent } from './shorten/shorten.component';
   imports: [
     BrowserModule,
     ShortenComponent,
+    NgbModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

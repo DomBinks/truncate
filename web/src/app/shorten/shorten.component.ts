@@ -5,11 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-shorten',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <p>
-      shorten works!
-    </p>
-  `,
+  templateUrl: './shorten.component.html',
   styleUrls: ['./shorten.component.css']
 })
 export class ShortenComponent {

@@ -53,6 +53,8 @@ func main() {
 
 	router := gin.Default()
 
+	router.LoadHTMLGlob("old_web/templates/*")
+
 	router.StaticFS("/static", gin.Dir("./web/dist/web", false))
 
 	router.GET("/", func(c *gin.Context) {
@@ -77,7 +79,7 @@ func main() {
 	})
 
 	router.NoRoute(func(c *gin.Context) {
-		c.File("./old_web/static/index.html")
+		c.File("/old_web/templates/index.html")
 	})
 
 	router.POST("/shorten", func(c *gin.Context) {
