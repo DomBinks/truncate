@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
 
@@ -13,85 +14,77 @@ import (
 
 func main() {
 
-	db := connectToDatabase()
+	db := connectToDatabase() // Get the database
 
-	router := gin.Default()
+	router := gin.Default() // Get a router for the web server
 
-	router.Use(func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "/")
-		c.Header("Access-Control-Allow-Methods", "POST")
-		c.Header("Access-Control-Allow-Headers", "Content-Type")
-		c.Header("Access-Control-Allow-Credentials", "true")
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(http.StatusNoContent)
-			return
-		}
-		c.Next()
-	})
-
+	// Default route
 	router.GET("/", func(c *gin.Context) {
+		// Display the Angular frontend
 		c.File("web/dist/web/index.html")
 	})
 
+	// Static files needed by Angular frontend
 	router.GET("/:file", func(c *gin.Context) {
+		// Return the static file from the Angular frontend
 		c.File("web/dist/web/" + c.Param("file"))
 	})
 
+	// Shortened link
 	router.GET("/link/:short", func(c *gin.Context) {
-		short := c.Param("short")
-		var original string
+		short := c.Param("short") // Get the URL number
+		var original string       // URL returned from the database
 
-		fmt.Println("SELECT original FROM urls WHERE short = '" + short + "';")
+		// Get the URL from the database
 		err := db.QueryRow("SELECT original FROM urls WHERE short = '" + short + "';").Scan(&original)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				log.Println("Couldn't find link row")
+				log.Println("Couldn't find the URL corresponding to the link")
 			} else {
 				log.Fatal(err)
 			}
 		}
 
+		// Redirect the user to the URL returned from the database
 		c.Redirect(http.StatusPermanentRedirect, "http://"+original)
 	})
 
-	/*
-		router.POST("/shorten", func(c *gin.Context) {
-			url := c.PostForm("url")
-				short := rand.Intn(10000000000)
-
-				_, err = db.Exec("INSERT INTO urls (name, original, short) VALUES ('test', '" + url + "', '" + strconv.Itoa(short) + "');")
-				if err != nil {
-					log.Fatal(err)
-				} else {
-					fmt.Println("Added url to database")
-				}
-
-				c.HTML(200, "shortened.html", gin.H{
-					"short": short,
-				})
-
-			fmt.Println("aaa " + url)
-		})
-	*/
-
 	router.POST("/shorten", func(c *gin.Context) {
-		fmt.Println("IN GO")
+		// JSON sent from the frontend
 		var reqData struct {
 			URL string `json:"url"`
 		}
 
+		// Get the JSON from the front end
 		if err := c.BindJSON(&reqData); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
-			return
+			log.Fatal(err)
 		}
 
-		fmt.Println("out " + reqData.URL)
+		url := reqData.URL // Get the URL from the JSON
+
+		// Generate a random number to use as the shortened link
+		short := rand.Intn(10000000000)
+
+		fmt.Println("url: " + url + " short: " + strconv.Itoa(short))
+
+		// Add this URL to the database with the generated number
+		_, err := db.Exec("INSERT INTO urls (name, original, short) VALUES ('test', '" + url + "', '" + strconv.Itoa(short) + "');")
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			fmt.Println("Added url to database")
+		}
+
+		fmt.Println("short " + strconv.Itoa(short))
 	})
 
-	router.Run("localhost:8080")
+	router.Run("localhost:8080") // Run the web server
 }
 
+// Connects to the PostgreSQL database and returns it as an sql.DB
+// pointer
 func connectToDatabase() *sql.DB {
+	// Set the credentials for connecting to the database
 	const (
 		host     = "localhost"
 		port     = 5432
@@ -100,11 +93,14 @@ func connectToDatabase() *sql.DB {
 		dbname   = "urlshortener"
 	)
 
+	// Put the credentials into a string
 	connectionString := "host=" + host + " port =" +
 		strconv.Itoa(port) + " user=" + user + " password=" +
 		password + " dbname=" + dbname + " sslmode=disable"
 
 	fmt.Println("Connecting to database")
+
+	// Connect to the database
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		log.Fatal(err)
@@ -112,6 +108,8 @@ func connectToDatabase() *sql.DB {
 	defer db.Close()
 
 	fmt.Println("Getting rows")
+
+	// Get all the rows in the database
 	rows, err := db.Query("SELECT name, original, short FROM urls;")
 	if err != nil {
 		log.Fatal(err)
@@ -119,13 +117,19 @@ func connectToDatabase() *sql.DB {
 	defer rows.Close()
 
 	fmt.Println("Rows:")
+
+	// Print all the rows retrieved from the database
 	for rows.Next() {
+		// Stores each field of the row
 		var name string
 		var original string
 		var short string
+
+		// Get the fields
 		if err := rows.Scan(&name, &original, &short); err != nil {
 			log.Fatal(err)
 		} else {
+			// Print the row
 			fmt.Println(name, original, short)
 		}
 	}
