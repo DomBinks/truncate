@@ -16,19 +16,30 @@ import { Router } from '@angular/router';
   styleUrls: ['./shorten.component.css']
 })
 export class ShortenComponent {
-  url:string = ''; // Stores the URL submitted by the user
+  url: string = ''; // Stores the URL submitted by the user
 
   submitURL() {
     console.log(this.url); // Log the URL to the console
 
     const data = {url: this.url}; // Put the URL in a JSON
 
+    interface resp {
+      short: string;
+    }
+
     // Send a POST request with the JSON to the Go backend
     // (Have to subscribe for the POST request to be sent)
-    this.http.post<any>('/shorten', data).subscribe();
+    this.http.post<resp>('/shorten', data).subscribe({
+      next: response => {
+        console.log("angular: " + response.short);
 
-    // Navigate to the page to display the shortened link
-    this.router.navigate(['/shortened']);
+        // Navigate to the page to display the shortened link
+        this.router.navigate(['/shortened'], { queryParams: {short: response.short}});
+      },
+      error: err => {
+        console.log("Error:" + err);
+      }
+    });
   }
 
   constructor(private http: HttpClient, private router: Router) {}

@@ -15,6 +15,7 @@ import (
 func main() {
 
 	db := connectToDatabase() // Get the database
+	defer db.Close()
 
 	router := gin.Default() // Get a router for the web server
 
@@ -75,7 +76,7 @@ func main() {
 			fmt.Println("Added url to database")
 		}
 
-		fmt.Println("short " + strconv.Itoa(short))
+		c.JSON(http.StatusOK, gin.H{"short": short})
 	})
 
 	router.Run("localhost:8080") // Run the web server
@@ -105,7 +106,6 @@ func connectToDatabase() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
 
 	fmt.Println("Getting rows")
 
