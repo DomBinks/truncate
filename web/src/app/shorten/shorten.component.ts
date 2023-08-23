@@ -19,10 +19,9 @@ export class ShortenComponent {
   url: string = ''; // Stores the URL submitted by the user
 
   submitURL() {
-    console.log(this.url); // Log the URL to the console
-
     const data = {url: this.url}; // Put the URL in a JSON
 
+    // Interface of the response to the POST request
     interface resp {
       short: string;
     }
@@ -31,8 +30,6 @@ export class ShortenComponent {
     // (Have to subscribe for the POST request to be sent)
     this.http.post<resp>('/shorten', data).subscribe({
       next: response => {
-        console.log("angular: " + response.short);
-
         // Navigate to the page to display the shortened link
         this.router.navigate(['/shortened'], { queryParams: {short: response.short}});
       },

@@ -10,11 +10,12 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./link.component.css']
 })
 export class LinkComponent {
-  short: string = '';
+  short: string = ''; // Stores generated number provided by the query parameters
 
   constructor(private route: ActivatedRoute) {
+    // Get the query parameters
     this.route.queryParams.subscribe(params => {
-      console.log("link: " + params['short']);
+      // Get the short query parameter
       this.short = params['short'];
     })
   }

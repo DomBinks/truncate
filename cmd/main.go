@@ -15,7 +15,7 @@ import (
 func main() {
 
 	db := connectToDatabase() // Get the database
-	defer db.Close()
+	defer db.Close()          // Defer the closing of the database until the program ends
 
 	router := gin.Default() // Get a router for the web server
 
@@ -27,11 +27,11 @@ func main() {
 
 	// Static files needed by Angular frontend
 	router.GET("/:file", func(c *gin.Context) {
-		// Return the static file from the Angular frontend
+		// Return the static file from the Angular frontend folder
 		c.File("web/dist/web/" + c.Param("file"))
 	})
 
-	// Shortened link
+	// Redirect a shortened link to the original URL
 	router.GET("/link/:short", func(c *gin.Context) {
 		short := c.Param("short") // Get the URL number
 		var original string       // URL returned from the database
@@ -46,12 +46,14 @@ func main() {
 			}
 		}
 
-		// Redirect the user to the URL returned from the database
+		// Redirect the user to the original URL returned from the database
 		c.Redirect(http.StatusPermanentRedirect, "http://"+original)
 	})
 
+	// Get the URL to shorten from the frontend and send back
+	// the generated number
 	router.POST("/shorten", func(c *gin.Context) {
-		// JSON sent from the frontend
+		// Stores the JSON sent from the frontend
 		var reqData struct {
 			URL string `json:"url"`
 		}
@@ -76,6 +78,7 @@ func main() {
 			fmt.Println("Added url to database")
 		}
 
+		// Send back the generated number as a response
 		c.JSON(http.StatusOK, gin.H{"short": short})
 	})
 
@@ -107,32 +110,5 @@ func connectToDatabase() *sql.DB {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Getting rows")
-
-	// Get all the rows in the database
-	rows, err := db.Query("SELECT name, original, short FROM urls;")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer rows.Close()
-
-	fmt.Println("Rows:")
-
-	// Print all the rows retrieved from the database
-	for rows.Next() {
-		// Stores each field of the row
-		var name string
-		var original string
-		var short string
-
-		// Get the fields
-		if err := rows.Scan(&name, &original, &short); err != nil {
-			log.Fatal(err)
-		} else {
-			// Print the row
-			fmt.Println(name, original, short)
-		}
-	}
-
-	return db
+	return db // Return a pointer to the database
 }
