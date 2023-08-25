@@ -2,13 +2,21 @@ package main
 
 import (
 	"database/sql"
+	"encoding/gob"
 	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
+	"url-shortener/platform/authenticator"
+	"url-shortener/platform/callback"
+	"url-shortener/platform/login"
+	"url-shortener/platform/logout"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -18,6 +26,19 @@ func main() {
 	defer db.Close()          // Defer the closing of the database until the program ends
 
 	router := gin.Default() // Get a router for the web server
+
+	gob.Register(map[string]interface{}{})
+	store := cookie.NewStore([]byte("secret"))
+	router.Use(sessions.Sessions("auth-session", store))
+
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Unable to load environment variables")
+	}
+
+	auth, err := authenticator.New()
+	if err != nil {
+		log.Fatal("Unable to initialise the authenticator")
+	}
 
 	// Default route
 	router.GET("/", func(c *gin.Context) {
@@ -49,6 +70,10 @@ func main() {
 		// Redirect the user to the original URL returned from the database
 		c.Redirect(http.StatusPermanentRedirect, "http://"+original)
 	})
+
+	router.GET("/login", login.Handler(auth))
+	router.GET("/callback", callback.Handler(auth))
+	router.GET("/logout", logout.Handler)
 
 	// Get the URL to shorten from the frontend and send back
 	// the generated number
