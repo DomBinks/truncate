@@ -8,7 +8,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"url-shortener/platform/authenticator"
+	"url-shortener/cmd/authenticator"
 )
 
 // Handler for our login.

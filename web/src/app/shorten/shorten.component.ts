@@ -38,11 +38,6 @@ export class ShortenComponent {
       }
     });
   }
-
-  login() {
-    console.log("asdasdokj");
-    this.http.get<any>('/login').subscribe();
-  }
-
+  
   constructor(private http: HttpClient, private router: Router) {}
 }

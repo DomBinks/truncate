@@ -8,10 +8,11 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
-	"url-shortener/platform/authenticator"
-	"url-shortener/platform/callback"
-	"url-shortener/platform/login"
-	"url-shortener/platform/logout"
+	"url-shortener/cmd/authenticator"
+	"url-shortener/cmd/callback"
+	"url-shortener/cmd/login"
+	"url-shortener/cmd/logout"
+	middleware "url-shortener/cmd/middlware"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -74,6 +75,10 @@ func main() {
 	router.GET("/login", login.Handler(auth))
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/logout", logout.Handler)
+	router.GET("/profile", func(c *gin.Context) {
+		middleware.IsAuthenticated(c)
+		c.File("web/dist/web/index.html")
+	})
 
 	// Get the URL to shorten from the frontend and send back
 	// the generated number
