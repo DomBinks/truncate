@@ -75,14 +75,7 @@ func main() {
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/logout", logout.Handler)
 	router.GET("/profile", func(c *gin.Context) {
-		id := getID(c)
-
-		if id == "default" {
-			c.Redirect(http.StatusTemporaryRedirect, "/")
-		} else {
-			fmt.Println(id)
-			c.File("web/dist/web/index.html")
-		}
+		c.File("web/dist/web/index.html")
 	})
 
 	// Get the URL to shorten from the frontend and send back
@@ -117,6 +110,34 @@ func main() {
 
 		// Send back the generated number as a response
 		c.JSON(http.StatusOK, gin.H{"short": short})
+	})
+
+	router.POST("/get-profile", func(c *gin.Context) {
+		id := getID(c)
+
+		fmt.Println(id)
+
+		var arr [][2]string
+
+		rows, err := db.Query("SELECT original, short FROM urls WHERE name='" + id + "';")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var original string
+			var short string
+
+			if err := rows.Scan(&original, &short); err != nil {
+				log.Fatal(err)
+			} else {
+				pair := [2]string{original, short}
+				arr = append(arr, pair)
+			}
+		}
+
+		c.JSON(http.StatusOK, arr)
 	})
 
 	router.Run("localhost:8080") // Run the web server
