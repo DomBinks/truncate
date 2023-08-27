@@ -12,7 +12,6 @@ import (
 	"url-shortener/cmd/callback"
 	"url-shortener/cmd/login"
 	"url-shortener/cmd/logout"
-	middleware "url-shortener/cmd/middlware"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -76,8 +75,14 @@ func main() {
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/logout", logout.Handler)
 	router.GET("/profile", func(c *gin.Context) {
-		middleware.IsAuthenticated(c)
-		c.File("web/dist/web/index.html")
+		id := getID(c)
+
+		if id == "default" {
+			c.Redirect(http.StatusTemporaryRedirect, "/")
+		} else {
+			fmt.Println(id)
+			c.File("web/dist/web/index.html")
+		}
 	})
 
 	// Get the URL to shorten from the frontend and send back
@@ -100,8 +105,10 @@ func main() {
 
 		fmt.Println("url: " + url + " short: " + strconv.Itoa(short))
 
+		id := getID(c)
+
 		// Add this URL to the database with the generated number
-		_, err := db.Exec("INSERT INTO urls (name, original, short) VALUES ('test', '" + url + "', '" + strconv.Itoa(short) + "');")
+		_, err := db.Exec("INSERT INTO urls (name, original, short) VALUES ('" + id + "', '" + url + "', '" + strconv.Itoa(short) + "');")
 		if err != nil {
 			log.Fatal(err)
 		} else {
@@ -141,4 +148,15 @@ func connectToDatabase() *sql.DB {
 	}
 
 	return db // Return a pointer to the database
+}
+
+func getID(c *gin.Context) string {
+	session := sessions.Default(c)
+	profile := session.Get("profile")
+	if profile != nil {
+		profileMap := profile.(map[string]interface{})
+		return profileMap["sub"].(string)
+	} else {
+		return "default"
+	}
 }
