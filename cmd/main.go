@@ -116,28 +116,48 @@ func main() {
 		id := getID(c)
 
 		fmt.Println(id)
+		if id == "default" {
+			c.JSON(http.StatusNotFound, gin.H{"message": "User not signed in."})
+		} else {
+			var arr [][2]string
 
-		var arr [][2]string
+			rows, err := db.Query("SELECT original, short FROM urls WHERE name='" + id + "';")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer rows.Close()
 
-		rows, err := db.Query("SELECT original, short FROM urls WHERE name='" + id + "';")
+			for rows.Next() {
+				var original string
+				var short string
+
+				if err := rows.Scan(&original, &short); err != nil {
+					log.Fatal(err)
+				} else {
+					pair := [2]string{original, short}
+					arr = append(arr, pair)
+				}
+			}
+
+			c.JSON(http.StatusOK, arr)
+		}
+	})
+
+	router.POST("/delete-row", func(c *gin.Context) {
+		var reqData struct {
+			ROW string `json:"row"`
+		}
+
+		if err := c.BindJSON(&reqData); err != nil {
+			log.Fatal(err)
+		}
+
+		original := reqData.ROW
+
+		_, err := db.Exec("DELETE FROM urls WHERE short = '" + original + "';")
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var original string
-			var short string
-
-			if err := rows.Scan(&original, &short); err != nil {
-				log.Fatal(err)
-			} else {
-				pair := [2]string{original, short}
-				arr = append(arr, pair)
-			}
-		}
-
-		c.JSON(http.StatusOK, arr)
 	})
 
 	router.Run("localhost:8080") // Run the web server
