@@ -1,3 +1,6 @@
+<div class="container d-flex justify-content-center">
+  <h2 class="d-flex align-self-end display-2">Your links:</h2>
+</div>
 <div class="container">
   <div class="d-flex flex-column align-items-center justify-content-center">
     <div *ngFor="let row of rows" class="d-flex mt-4">
@@ -8,7 +11,4 @@
       <button class="btn btn-primary p-2 ms-2" (click)="deleteRow(row[1])">Delete</button>
     </div>
   </div>
-</div>
-<div class="d-flex justify-content-center p-4">
-  <a href="/logout"><button class="btn btn-primary">Logout</button></a>
 </div>

@@ -78,6 +78,18 @@ func main() {
 		c.File("web/dist/web/index.html")
 	})
 
+	router.GET("/loginUI", func(c *gin.Context) {
+		id := getID(c)
+
+		if id != "default" {
+			c.JSON(http.StatusOK, gin.H{"func": "Logout",
+				"link": "/logout"})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"func": "Login",
+				"link": "/login"})
+		}
+	})
+
 	// Get the URL to shorten from the frontend and send back
 	// the generated number
 	router.POST("/shorten", func(c *gin.Context) {

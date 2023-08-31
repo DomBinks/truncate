@@ -34,10 +34,10 @@ export class ShortenComponent {
         this.router.navigate(['/shortened'], { queryParams: {short: response.short}});
       },
       error: err => {
-        console.log("Error:" + err);
+        console.log("Error: " + err);
       }
     });
   }
-  
+
   constructor(private http: HttpClient, private router: Router) {}
 }
