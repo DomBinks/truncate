@@ -3,6 +3,7 @@
 </div>
 <div class="container">
   <div class="d-flex flex-column align-items-center justify-content-center">
+    <!-- Create a div for each row in the rows array, displaying the information in that row -->
     <div *ngFor="let row of rows" class="d-flex mt-4">
       <div class="d-flex bg-primary text-white">
         <a href="//{{ row[0] }}" target="_blank"><h4 class="p-2">{{ row[0] }}</h4></a>

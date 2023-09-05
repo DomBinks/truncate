@@ -11,17 +11,23 @@ import { Router } from '@angular/router';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent {
+  // Stores all the user's shortened URLs alongside the original URL
+  // Index 0 - original URL, index 1 - shortened URL
   rows: Array<Array<string>> = [];
 
   ngOnInit() {
+    // Interface for the response of the POST request
     interface row {
       original: string;
       short: string;
     }
 
-    this.http.post<any>('/get-profile', {}).subscribe({
+    // Send a POST request to the server to get the current user's URLs
+    this.http.post<any>('/get-urls', {}).subscribe({
       next: response => {
+        // For each row in the response
         for (const row of response) {
+          // Add the original URL and shortened URL to the rows array
           this.rows.push([row[0], row[1]]);
         }
       },
@@ -32,9 +38,12 @@ export class ProfileComponent {
     });
   }
 
+  // When the user selects a shortened URL to delete
   deleteRow(row: string) {
+    // Send a POST request to the server, specifying the row to remove
     this.http.post<any>('/delete-row', {"row": row}).subscribe({
       next: _ => {
+        // Refresh the page once the row has been deleted
         window.location.reload();
       },
       error: err => {

@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ShortenComponent } from './shorten/shorten.component';
-import { LinkComponent } from './link/link.component';
+import { HomeComponent } from './home/home.component';
+import { ShortenedComponent } from './shortened/shortened.component';
 import { ProfileComponent } from './profile/profile.component';
+import { InvalidComponent } from './invalid/invalid.component';
 
 const routes: Routes = [
-  { path: '', component: ShortenComponent},
-  { path: 'shortened', component: LinkComponent},
-  { path: 'profile', component: ProfileComponent},
+  { path: '', component: HomeComponent },
+  { path: 'shortened', component: ShortenedComponent },
+  { path: 'profile', component: ProfileComponent },
+  { path: 'invalid', component: InvalidComponent },
 ];
 
 @NgModule({

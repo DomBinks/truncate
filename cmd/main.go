@@ -74,20 +74,14 @@ func main() {
 	router.GET("/login", login.Handler(auth))
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/logout", logout.Handler)
-	router.GET("/go-profile", func(c *gin.Context) {
-		id := getID(c)
-		fmt.Println("profile " + id)
-		if id != "default" {
-			c.Redirect(http.StatusTemporaryRedirect, "/profile")
-		} else {
-			c.Redirect(http.StatusTemporaryRedirect, "/")
-		}
+	router.GET("/invalid", func(c *gin.Context) {
+		c.File("web/dist/web/index.html")
 	})
-	router.GET("profile", func(c *gin.Context) {
+	router.GET("/profile", func(c *gin.Context) {
 		c.File("web/dist/web/index.html")
 	})
 
-	router.GET("/loginUI", func(c *gin.Context) {
+	router.GET("/get-login-UI", func(c *gin.Context) {
 		id := getID(c)
 
 		if id != "default" {
@@ -112,17 +106,13 @@ func main() {
 			log.Fatal(err)
 		}
 
-		url := reqData.URL // Get the URL from the JSON
-
 		// Generate a random number to use as the shortened link
-		short := rand.Intn(10000000000)
-
-		fmt.Println("url: " + url + " short: " + strconv.Itoa(short))
+		url := rand.Intn(10000000000)
 
 		id := getID(c)
 
 		// Add this URL to the database with the generated number
-		_, err := db.Exec("INSERT INTO urls (name, original, short) VALUES ('" + id + "', '" + url + "', '" + strconv.Itoa(short) + "');")
+		_, err := db.Exec("INSERT INTO urls (name, original, short) VALUES ('" + id + "', '" + reqData.URL + "', '" + strconv.Itoa(url) + "');")
 		if err != nil {
 			log.Fatal(err)
 		} else {
@@ -130,13 +120,13 @@ func main() {
 		}
 
 		// Send back the generated number as a response
-		c.JSON(http.StatusOK, gin.H{"short": short})
+		c.JSON(http.StatusOK, gin.H{"url": url})
 	})
 
-	router.POST("/get-profile", func(c *gin.Context) {
+	router.POST("/get-urls", func(c *gin.Context) {
 		id := getID(c)
 
-		fmt.Println("Get profile " + id)
+		fmt.Println("Get urls " + id)
 		if id == "default" {
 			c.JSON(http.StatusNotFound, gin.H{"message": "User not signed in."})
 		} else {

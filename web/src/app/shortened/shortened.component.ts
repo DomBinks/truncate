@@ -3,20 +3,20 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-link',
+  selector: 'app-shortened',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './link.component.html',
-  styleUrls: ['./link.component.css']
+  templateUrl: './shortened.component.html',
+  styleUrls: ['./shortened.component.css']
 })
-export class LinkComponent {
-  short: string = ''; // Stores generated number provided by the query parameters
+export class ShortenedComponent {
+  url: string = ''; // Stores the shortened URL returned from the server
 
   constructor(private route: ActivatedRoute) {
     // Get the query parameters
     this.route.queryParams.subscribe(params => {
-      // Get the short query parameter
-      this.short = params['short'];
+      // Get the new link from the query parameters
+      this.url = params['url'];
     })
   }
 }
