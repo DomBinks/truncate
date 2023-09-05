@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,12 @@ export class LoginComponent {
   func: string = '';
   link: string = '';
   login: boolean = false;
+
+  logout(func: string) {
+    if(func == "Logout") {
+      this.cookieService.delete('auth-session');
+    }
+  }
 
   ngOnInit() {
     interface loginUI {
@@ -32,5 +39,5 @@ export class LoginComponent {
     });
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cookieService: CookieService) {}
 }

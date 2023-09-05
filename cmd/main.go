@@ -74,7 +74,16 @@ func main() {
 	router.GET("/login", login.Handler(auth))
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/logout", logout.Handler)
-	router.GET("/profile", func(c *gin.Context) {
+	router.GET("/go-profile", func(c *gin.Context) {
+		id := getID(c)
+		fmt.Println("profile " + id)
+		if id != "default" {
+			c.Redirect(http.StatusTemporaryRedirect, "/profile")
+		} else {
+			c.Redirect(http.StatusTemporaryRedirect, "/")
+		}
+	})
+	router.GET("profile", func(c *gin.Context) {
 		c.File("web/dist/web/index.html")
 	})
 
@@ -127,7 +136,7 @@ func main() {
 	router.POST("/get-profile", func(c *gin.Context) {
 		id := getID(c)
 
-		fmt.Println(id)
+		fmt.Println("Get profile " + id)
 		if id == "default" {
 			c.JSON(http.StatusNotFound, gin.H{"message": "User not signed in."})
 		} else {

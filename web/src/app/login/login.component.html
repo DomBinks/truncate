@@ -1,7 +1,5 @@
 <div class="d-flex justify-content-center p-4">
     <a href="/"><button class="btn btn-primary">Home</button></a>
-  <div *ngIf="login">
-    <a href="/profile"><button class="btn btn-primary ms-3">Profile</button></a>
-    <a href="{{ link }}"><button class="btn btn-primary ms-3">{{ func }}</button></a>
-  </div>
+    <a href="/go-profile"><button class="btn btn-primary ms-3">Profile</button></a>
+    <a href="{{ link }}"><button class="btn btn-primary ms-3" (click)="logout(func)">{{ func }}</button></a>
 </div>
