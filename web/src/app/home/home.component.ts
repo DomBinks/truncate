@@ -24,18 +24,24 @@ export class HomeComponent {
 
     // Interface of the response to the POST request
     interface resp {
-      url: string;
+      shortened: string;
     }
 
     // Send the JSON to the backend using a POST request
     this.http.post<resp>('/shorten', data).subscribe({
       next: response => {
         // Navigate to the page to display the shortened URL,
-        // passing the new URL as a query parameter 
-        this.router.navigate(['/shortened'], { queryParams: {url: response.url}});
+        // passing the shortened URL as a query parameter 
+        this.router.navigate(['/shortened'], { queryParams: {shortened: response.shortened}});
       },
       error: err => {
         console.log("Error: " + err);
+
+        // If the error was due to submitting an invalid URL
+        if(err.status == 400) {
+          // Navigate to the page that tells the user the URL was invalid
+          this.router.navigate(['/invalid']);
+        }
       }
     });
   }

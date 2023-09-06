@@ -5,7 +5,9 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"url-shortener/cmd/helpers"
 
 	"github.com/gin-gonic/gin"
@@ -43,7 +45,7 @@ func URL(c *gin.Context) {
 	}
 
 	// Redirect the user to the original URL returned from the database
-	c.Redirect(http.StatusPermanentRedirect, "http://"+original)
+	c.Redirect(http.StatusPermanentRedirect, original)
 
 }
 
@@ -78,13 +80,31 @@ func Shorten(c *gin.Context) {
 		log.Fatal(err)
 	}
 
+	// Get the original URL from the JSON
+	original := reqData.URL
+
+	// Add "https://" to the original URL if it isn't there already
+	if !strings.HasPrefix(original, "http://") && !strings.HasPrefix(original, "https://") {
+		original = "https://" + original
+	}
+
+	// Parse the original URL to check it's valid
+	parsedURL, err := url.Parse(original)
+
+	// If the original URL isn't a valid URL
+	if err != nil || parsedURL.Host == "" || !strings.Contains(parsedURL.Host, ".") {
+		// Return an error to the front-end
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid URL"})
+		return
+	}
+
 	// Generate a random number to use as the shortened URL
-	url := rand.Intn(10000000000)
+	shortened := rand.Intn(10000000000)
 
 	id := helpers.GetID(c) // Get the user's ID
 
 	// Add the original URL and shortened URL into the database
-	_, err = db.Exec("INSERT INTO urls (name, original, short) VALUES ('" + id + "', '" + reqData.URL + "', '" + strconv.Itoa(url) + "');")
+	_, err = db.Exec("INSERT INTO urls (name, original, short) VALUES ('" + id + "', '" + original + "', '" + strconv.Itoa(shortened) + "');")
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -92,7 +112,7 @@ func Shorten(c *gin.Context) {
 	}
 
 	// Return the shortened URL in a JSON
-	c.JSON(http.StatusOK, gin.H{"url": url})
+	c.JSON(http.StatusOK, gin.H{"shortened": shortened})
 }
 
 // Handler for getting the user's shortened URLS

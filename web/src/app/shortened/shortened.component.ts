@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-shortened',
@@ -15,8 +15,8 @@ export class ShortenedComponent {
   constructor(private route: ActivatedRoute) {
     // Get the query parameters
     this.route.queryParams.subscribe(params => {
-      // Get the new link from the query parameters
-      this.url = params['url'];
+      // Get the shortened URL from the query parameters
+      this.url = params['shortened'];
     })
   }
 }
