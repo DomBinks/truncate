@@ -39,9 +39,10 @@ export class ProfileComponent {
   }
 
   // When the user selects a shortened URL to delete
-  deleteRow(row: string) {
-    // Send a POST request to the server, specifying the row to remove
-    this.http.post<any>('/delete-row', {"row": row}).subscribe({
+  deleteRow(shortened: string) {
+    // Send a POST request to the server, specifying the shortened
+    // URL of the row to remove
+    this.http.post<any>('/delete-row', {"shortened": shortened}).subscribe({
       next: _ => {
         // Refresh the page once the row has been deleted
         window.location.reload();

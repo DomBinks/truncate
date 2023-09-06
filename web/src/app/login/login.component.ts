@@ -11,14 +11,14 @@ import { CookieService } from 'ngx-cookie-service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  func: string = ''; // Label of the login/logout button
+  label: string = ''; // Label of the login/logout button
   link: string = ''; // Link the login/logout button should use
   profile: boolean = false; // Whether the profile button should be shown
 
   // Run when the login/logout button is pressed
-  logout(func: string) {
+  logout(label: string) {
     // If the current function is to logout
-    if(func == "Logout") {
+    if(label == "Logout") {
       // Delete the authentication cookies
       this.cookieService.delete('auth-session');
     }
@@ -27,7 +27,7 @@ export class LoginComponent {
   ngOnInit() {
     // Interface for the response to the POST request
     interface loginUI {
-      func: string; // Label of the login/logout button
+      label: string; // Label of the login/logout button
       link: string; // The link the button should use
     }
 
@@ -35,12 +35,12 @@ export class LoginComponent {
     this.http.get<loginUI>('/get-login-UI').subscribe({
       next: response => {
         // Set the class variables to the values returned
-        this.func = response.func;
+        this.label = response.label;
         this.link = response.link;
 
         // The profile button should be displayed if the user is logged in
-        // i.e. meaning the button's label says logout
-        this.profile = response.func == "Logout";
+        // i.e. the button's label says logout
+        this.profile = response.label == "Logout";
       },
       error: err => {
         console.log("Error: " + err);
