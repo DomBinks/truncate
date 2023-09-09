@@ -39,7 +39,7 @@ func main() {
 	// Set router paths to use handlers
 	router.GET("/", handlers.Index)
 	router.GET("/:file", handlers.Static)
-	router.GET("/link/:url", handlers.URL)
+	router.GET("/link/:shortened", handlers.URL)
 	router.GET("/login", login.Handler(auth))
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/logout", logout.Handler)

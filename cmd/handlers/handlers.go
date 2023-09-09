@@ -3,10 +3,8 @@ package handlers
 import (
 	"database/sql"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"url-shortener/cmd/helpers"
 
@@ -30,12 +28,12 @@ func URL(c *gin.Context) {
 	db := helpers.GetDatabase() // Get the database
 	defer db.Close()
 
-	url := c.Param("url") // Get the shortened URL
-	var original string   // Original URL returned from the database
+	shortened := c.Param("shortened") // Get the shortened URL
+	var original string               // Original URL returned from the database
 
 	// Get the original URL from the database, and store in the
 	// original string
-	err := db.QueryRow("SELECT original FROM urls WHERE short = '" + url + "';").Scan(&original)
+	err := db.QueryRow("SELECT original FROM urls WHERE short = $1;", shortened).Scan(&original)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println("Couldn't find the URL corresponding to the link")
@@ -46,7 +44,6 @@ func URL(c *gin.Context) {
 
 	// Redirect the user to the original URL returned from the database
 	c.Redirect(http.StatusPermanentRedirect, original)
-
 }
 
 // Handler for getting the correct label and link for the login/logout
@@ -98,13 +95,13 @@ func Shorten(c *gin.Context) {
 		return
 	}
 
-	// Generate a random number to use as the shortened URL
-	shortened := rand.Intn(10000000000)
+	// Generate a random string to use as part of the shortened URL
+	shortened := helpers.GenerateShortened()
 
 	id := helpers.GetID(c) // Get the user's ID
 
 	// Add the original URL and shortened URL into the database
-	_, err = db.Exec("INSERT INTO urls (name, original, short) VALUES ('" + id + "', '" + original + "', '" + strconv.Itoa(shortened) + "');")
+	_, err = db.Exec("INSERT INTO urls (name, original, short) VALUES ($1, $2, $3);", id, original, shortened)
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -122,6 +119,8 @@ func GetURLs(c *gin.Context) {
 
 	id := helpers.GetID(c) // Get the user's ID
 
+	url := "http://localhost:8080/link/"
+
 	if id == "default" {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not signed in."})
 	} else {
@@ -129,7 +128,7 @@ func GetURLs(c *gin.Context) {
 
 		// Query the database to get the rows of original and
 		// shortened URLs that match the user
-		result, err := db.Query("SELECT original, short FROM urls WHERE name='" + id + "';")
+		result, err := db.Query("SELECT original, short FROM urls WHERE name=$1;", id)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -146,7 +145,7 @@ func GetURLs(c *gin.Context) {
 				log.Fatal(err)
 			} else {
 				// Put the variables into an array
-				pair := [2]string{original, short}
+				pair := [2]string{original, url + short}
 
 				// Append this array to the array of rows
 				rows = append(rows, pair)
@@ -177,7 +176,7 @@ func DeleteRow(c *gin.Context) {
 	shortened := reqData.SHORTENED // Get the shortened URL from the JSON
 
 	// Execute the SQL command to remove the row with this original URL
-	_, err = db.Exec("DELETE FROM urls WHERE short = '" + shortened + "';")
+	_, err = db.Exec("DELETE FROM urls WHERE short =$1;", shortened)
 	if err != nil {
 		log.Fatal(err)
 	}

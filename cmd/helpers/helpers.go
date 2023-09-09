@@ -3,6 +3,7 @@ package helpers
 import (
 	"database/sql"
 	"log"
+	"math/rand"
 	"strconv"
 
 	"github.com/gin-contrib/sessions"
@@ -53,4 +54,36 @@ func GetID(c *gin.Context) string {
 		// If the user isn't logged in
 		return "default"
 	}
+}
+
+// Generate the random string used to create the shortened URL
+func GenerateShortened() string {
+	// Possible symbols to choose from
+	symbols := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	var shortened string // The string to output
+
+	// Infinite loop
+	for {
+		shortened = "" // Start with an empty string
+
+		// Add 6 random symbols to the string
+		for i := 0; i < 6; i++ {
+			shortened += string(symbols[rand.Intn(len(symbols))])
+		}
+
+		// Conenct to the database
+		db := GetDatabase()
+		rows, err := db.Query("SELECT name FROM urls WHERE short='" + shortened + "';")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rows.Close()
+
+		// If this string hasn't been used yet
+		if !rows.Next() {
+			break // Break out the infinite loop
+		}
+	}
+
+	return shortened // Return the generated string
 }
