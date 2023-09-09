@@ -3,11 +3,11 @@ package main
 import (
 	"encoding/gob"
 	"log"
-	"url-shortener/cmd/authenticator"
-	"url-shortener/cmd/callback"
-	"url-shortener/cmd/handlers"
-	"url-shortener/cmd/login"
-	"url-shortener/cmd/logout"
+	"url-shortener/internal/authenticator"
+	"url-shortener/internal/callback"
+	"url-shortener/internal/handlers"
+	"url-shortener/internal/login"
+	"url-shortener/internal/logout"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"

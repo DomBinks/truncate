@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"url-shortener/cmd/helpers"
+	"url-shortener/internal/helpers"
 
 	"github.com/gin-gonic/gin"
 )

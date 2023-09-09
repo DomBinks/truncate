@@ -9,6 +9,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
+//
+// From the Auth0 quickstart guide
+//
+
 // Authenticator is used to authenticate our users.
 type Authenticator struct {
 	*oidc.Provider

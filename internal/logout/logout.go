@@ -8,6 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//
+// From the Auth0 quickstart guide
+//
+
 // Handler for our logout.
 func Handler(ctx *gin.Context) {
 	logoutUrl, err := url.Parse("https://" + os.Getenv("AUTH0_DOMAIN") + "/v2/logout")

@@ -8,8 +8,12 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"url-shortener/cmd/authenticator"
+	"url-shortener/internal/authenticator"
 )
+
+//
+// From the Auth0 quickstart guide
+//
 
 // Handler for our login.
 func Handler(auth *authenticator.Authenticator) gin.HandlerFunc {
