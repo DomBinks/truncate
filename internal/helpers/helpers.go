@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"math/rand"
+	"os"
 	"strconv"
 
 	"github.com/gin-contrib/sessions"
@@ -14,17 +15,16 @@ import (
 func GetDatabase() *sql.DB {
 	// Set the credentials for connecting to the database
 	const (
-		host     = "localhost"
-		port     = 5432
-		user     = "urlshortener"
-		password = "golang"
-		dbname   = "urlshortener"
+		host   = "truncate-db"
+		port   = 5432
+		user   = "t"
+		dbname = "truncate"
 	)
 
 	// Put the credentials into a string
-	connectionString := "host=" + host + " port =" +
+	connectionString := "host=" + host + " port=" +
 		strconv.Itoa(port) + " user=" + user + " password=" +
-		password + " dbname=" + dbname + " sslmode=disable"
+		os.Getenv("DB_PASSWORD") + " dbname=" + dbname + " sslmode=disable"
 
 	log.Println("Connecting to database")
 
@@ -73,7 +73,7 @@ func GenerateShortened() string {
 
 		// Conenct to the database
 		db := GetDatabase()
-		rows, err := db.Query("SELECT name FROM urls WHERE short='" + shortened + "';")
+		rows, err := db.Query("SELECT id FROM urls WHERE shortened='" + shortened + "';")
 		if err != nil {
 			log.Fatal(err)
 		}

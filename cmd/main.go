@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/gob"
 	"log"
-	"url-shortener/internal/authenticator"
-	"url-shortener/internal/callback"
-	"url-shortener/internal/handlers"
-	"url-shortener/internal/login"
-	"url-shortener/internal/logout"
+	"truncate/internal/authenticator"
+	"truncate/internal/callback"
+	"truncate/internal/handlers"
+	"truncate/internal/helpers"
+	"truncate/internal/login"
+	"truncate/internal/logout"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -36,10 +37,12 @@ func main() {
 		log.Fatal("Unable to initialise the authenticator")
 	}
 
+	helpers.GetDatabase()
+
 	// Set router paths to use handlers
 	router.GET("/", handlers.Index)
 	router.GET("/:file", handlers.Static)
-	router.GET("/link/:shortened", handlers.URL)
+	router.GET("/~:shortened", handlers.URL)
 	router.GET("/login", login.Handler(auth))
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/logout", logout.Handler)
@@ -51,5 +54,5 @@ func main() {
 	router.POST("/get-urls", handlers.GetURLs)
 	router.POST("/delete-row", handlers.DeleteRow)
 
-	router.Run("localhost:8080") // Run the web server
+	router.Run("0.0.0.0:8080") // Run the web server
 }

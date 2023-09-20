@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"url-shortener/internal/helpers"
+	"truncate/internal/helpers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,7 +33,7 @@ func URL(c *gin.Context) {
 
 	// Get the original URL from the database, and store in the
 	// original string
-	err := db.QueryRow("SELECT original FROM urls WHERE short = $1;", shortened).Scan(&original)
+	err := db.QueryRow("SELECT original FROM urls WHERE shortened = $1;", shortened).Scan(&original)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println("Couldn't find the URL corresponding to the link")
@@ -101,7 +101,7 @@ func Shorten(c *gin.Context) {
 	id := helpers.GetID(c) // Get the user's ID
 
 	// Add the original URL and shortened URL into the database
-	_, err = db.Exec("INSERT INTO urls (name, original, short) VALUES ($1, $2, $3);", id, original, shortened)
+	_, err = db.Exec("INSERT INTO urls (id, original, shortened) VALUES ($1, $2, $3);", id, original, shortened)
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -119,8 +119,6 @@ func GetURLs(c *gin.Context) {
 
 	id := helpers.GetID(c) // Get the user's ID
 
-	url := "http://localhost:8080/link/"
-
 	if id == "default" {
 		c.JSON(http.StatusNotFound, gin.H{"message": "User not signed in."})
 	} else {
@@ -128,7 +126,7 @@ func GetURLs(c *gin.Context) {
 
 		// Query the database to get the rows of original and
 		// shortened URLs that match the user
-		result, err := db.Query("SELECT original, short FROM urls WHERE name=$1;", id)
+		result, err := db.Query("SELECT original, shortened FROM urls WHERE id=$1;", id)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -145,7 +143,7 @@ func GetURLs(c *gin.Context) {
 				log.Fatal(err)
 			} else {
 				// Put the variables into an array
-				pair := [2]string{original, url + short}
+				pair := [2]string{original, short}
 
 				// Append this array to the array of rows
 				rows = append(rows, pair)
@@ -176,7 +174,7 @@ func DeleteRow(c *gin.Context) {
 	shortened := reqData.SHORTENED // Get the shortened URL from the JSON
 
 	// Execute the SQL command to remove the row with this original URL
-	_, err = db.Exec("DELETE FROM urls WHERE short =$1;", shortened)
+	_, err = db.Exec("DELETE FROM urls WHERE shortened =$1;", shortened)
 	if err != nil {
 		log.Fatal(err)
 	}

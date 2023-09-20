@@ -1,4 +1,4 @@
-module url-shortener
+module truncate
 
 go 1.21.0
 

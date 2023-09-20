@@ -15,6 +15,8 @@ export class ProfileComponent {
   // Index 0 - original URL, index 1 - shortened URL
   rows: Array<Array<string>> = [];
 
+  prefix: string = "http://localhost:8080/~" // Prefix of shortened URLs
+
   ngOnInit() {
     // Interface for the response of the POST request
     interface row {

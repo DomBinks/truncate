@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  app:
+    container_name: truncate-app
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    environment:
+      DB_PASSWORD: golang
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - net
+  db:
+    container_name: truncate-db
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    environment:
+      POSTGRES_DB: truncate
+      POSTGRES_USER: t
+      POSTGRES_PASSWORD: golang
+    ports:
+      - "5432:5432"
+    networks:
+      - net
+    volumes:
+      - database:/var/lib/postgresql/data
+
+networks:
+  net:
+    driver: bridge
+
+volumes:
+  database:
+    driver: local

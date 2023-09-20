@@ -8,7 +8,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"url-shortener/internal/authenticator"
+	"truncate/internal/authenticator"
 )
 
 //
