@@ -32,7 +32,7 @@ export class LoginComponent {
     }
 
     // Send a POST request to the server to get the text for the UI
-    this.http.get<loginUI>('/get-login-UI').subscribe({
+    this.http.get<loginUI>('/get-login').subscribe({
       next: response => {
         // Set the class variables to the values returned
         this.label = response.label;

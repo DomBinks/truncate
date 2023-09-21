@@ -10,13 +10,13 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./shortened.component.css']
 })
 export class ShortenedComponent {
-  url: string = "http://localhost:8080/~" // Stores the shortened URL returned from the server
+  url: string = "" // Stores the shortened URL returned from the server
 
   constructor(private route: ActivatedRoute) {
     // Get the query parameters
     this.route.queryParams.subscribe(params => {
       // Get the shortened URL from the query parameters
-      this.url += params['shortened'];
+      this.url = params['shortened'];
     })
   }
 }

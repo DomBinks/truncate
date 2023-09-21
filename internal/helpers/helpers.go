@@ -5,7 +5,6 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -13,18 +12,12 @@ import (
 
 // Get a pointer to a struct that represents the database
 func GetDatabase() *sql.DB {
-	// Set the credentials for connecting to the database
-	const (
-		host   = "truncate-db"
-		port   = 5432
-		user   = "t"
-		dbname = "truncate"
-	)
-
-	// Put the credentials into a string
-	connectionString := "host=" + host + " port=" +
-		strconv.Itoa(port) + " user=" + user + " password=" +
-		os.Getenv("DB_PASSWORD") + " dbname=" + dbname + " sslmode=disable"
+	// Setup the connection string using the credentials stored
+	// in environment variables
+	connectionString := "host=truncate-db" + " port=5432" +
+		" user=" + os.Getenv("DB_USER") + " password=" +
+		os.Getenv("DB_PASSWORD") + " dbname=" + os.Getenv("DB_NAME") +
+		" sslmode=disable"
 
 	log.Println("Connecting to database")
 
@@ -32,6 +25,8 @@ func GetDatabase() *sql.DB {
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		log.Fatal(err)
+	} else {
+		log.Println("Connected to database")
 	}
 
 	return db // Return a pointer to the database
@@ -79,7 +74,7 @@ func GenerateShortened() string {
 		}
 		defer rows.Close()
 
-		// If this string hasn't been used yet
+		// If this string hasn't been used yet for a shortened URL
 		if !rows.Next() {
 			break // Break out the infinite loop
 		}

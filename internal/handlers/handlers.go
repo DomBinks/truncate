@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"truncate/internal/helpers"
 
@@ -28,8 +29,10 @@ func URL(c *gin.Context) {
 	db := helpers.GetDatabase() // Get the database
 	defer db.Close()
 
-	shortened := c.Param("shortened") // Get the shortened URL
-	var original string               // Original URL returned from the database
+	shortened := "http://" + os.Getenv("HANDLER_IP") + ":8080/~" + c.Param("shortened") // Get the shortened URL
+	log.Println("shortened")
+
+	var original string // Original URL returned from the database
 
 	// Get the original URL from the database, and store in the
 	// original string
@@ -48,7 +51,7 @@ func URL(c *gin.Context) {
 
 // Handler for getting the correct label and link for the login/logout
 // button
-func GetLoginUI(c *gin.Context) {
+func GetLogin(c *gin.Context) {
 	id := helpers.GetID(c) // Get the user's ID
 
 	// Return the label and link in a JSON
@@ -66,7 +69,7 @@ func Shorten(c *gin.Context) {
 	db := helpers.GetDatabase() // Get the database
 	defer db.Close()
 
-	// Stores the JSON sent from the front-end
+	// Stores the JSON sent from the frontend
 	var reqData struct {
 		URL string `json:"url"`
 	}
@@ -90,13 +93,15 @@ func Shorten(c *gin.Context) {
 
 	// If the original URL isn't a valid URL
 	if err != nil || parsedURL.Host == "" || !strings.Contains(parsedURL.Host, ".") {
-		// Return an error to the front-end
+		// Return an error to the frontend
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid URL"})
 		return
 	}
 
-	// Generate a random string to use as part of the shortened URL
-	shortened := helpers.GenerateShortened()
+	// Generate a random string to use as the unique part of the shortened URL
+	shortened := "http://" + os.Getenv("HANDLER_IP") + ":8080/~" + helpers.GenerateShortened()
+
+	log.Println(original + " shortened to " + shortened)
 
 	id := helpers.GetID(c) // Get the user's ID
 
@@ -105,7 +110,7 @@ func Shorten(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		log.Println("Added url to database")
+		log.Println("Added URL to database")
 	}
 
 	// Return the shortened URL in a JSON
@@ -134,16 +139,16 @@ func GetURLs(c *gin.Context) {
 
 		// Loop over each row i.e. original and shortened URL pair
 		for result.Next() {
-			var original string // To store the original URL
-			var short string    // To store the shortened URL
+			var original string  // To store the original URL
+			var shortened string // To store the shortened URL
 
 			// Put the original and shortened URLs into the variables
-			err := result.Scan(&original, &short)
+			err := result.Scan(&original, &shortened)
 			if err != nil {
 				log.Fatal(err)
 			} else {
 				// Put the variables into an array
-				pair := [2]string{original, short}
+				pair := [2]string{original, shortened}
 
 				// Append this array to the array of rows
 				rows = append(rows, pair)

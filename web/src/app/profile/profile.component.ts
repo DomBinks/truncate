@@ -15,13 +15,11 @@ export class ProfileComponent {
   // Index 0 - original URL, index 1 - shortened URL
   rows: Array<Array<string>> = [];
 
-  prefix: string = "http://localhost:8080/~" // Prefix of shortened URLs
-
   ngOnInit() {
     // Interface for the response of the POST request
     interface row {
       original: string;
-      short: string;
+      shortened: string;
     }
 
     // Send a POST request to the server to get the current user's URLs
@@ -51,6 +49,7 @@ export class ProfileComponent {
       },
       error: err => {
         console.log("Error: " + err);
+        this.router.navigate(["/"]);
       }
     })
   }

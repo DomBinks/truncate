@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/gob"
 	"log"
+	"os"
 	"truncate/internal/authenticator"
 	"truncate/internal/callback"
 	"truncate/internal/handlers"
-	"truncate/internal/helpers"
 	"truncate/internal/login"
 	"truncate/internal/logout"
 
@@ -37,22 +37,23 @@ func main() {
 		log.Fatal("Unable to initialise the authenticator")
 	}
 
-	helpers.GetDatabase()
-
 	// Set router paths to use handlers
-	router.GET("/", handlers.Index)
+
+	// Paths to pages viewed by the user
+	router.GET("/", handlers.Index) // Index as handled by Angular
 	router.GET("/:file", handlers.Static)
 	router.GET("/~:shortened", handlers.URL)
 	router.GET("/login", login.Handler(auth))
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/logout", logout.Handler)
-	router.GET("/invalid", handlers.Index)
-	router.GET("/profile", handlers.Index)
-	router.GET("/get-login-UI", handlers.GetLoginUI)
+	router.GET("/invalid", handlers.Index) // Index as handled by Angular
+	router.GET("/profile", handlers.Index) // Index as handled by Angular
+	router.GET("/get-login", handlers.GetLogin)
 
+	// Paths used to provide an API to the frontend
 	router.POST("/shorten", handlers.Shorten)
 	router.POST("/get-urls", handlers.GetURLs)
 	router.POST("/delete-row", handlers.DeleteRow)
 
-	router.Run("0.0.0.0:8080") // Run the web server
+	router.Run(os.Getenv("ROUTER_IP") + ":8080") // Run the web server
 }
