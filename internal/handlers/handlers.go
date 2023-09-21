@@ -30,7 +30,6 @@ func URL(c *gin.Context) {
 	defer db.Close()
 
 	shortened := "http://" + os.Getenv("HANDLER_IP") + ":8080/~" + c.Param("shortened") // Get the shortened URL
-	log.Println("shortened")
 
 	var original string // Original URL returned from the database
 

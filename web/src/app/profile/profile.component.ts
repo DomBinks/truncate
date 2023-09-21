@@ -16,12 +16,6 @@ export class ProfileComponent {
   rows: Array<Array<string>> = [];
 
   ngOnInit() {
-    // Interface for the response of the POST request
-    interface row {
-      original: string;
-      shortened: string;
-    }
-
     // Send a POST request to the server to get the current user's URLs
     this.http.post<any>('/get-urls', {}).subscribe({
       next: response => {
