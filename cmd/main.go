@@ -55,5 +55,5 @@ func main() {
 	router.POST("/get-urls", handlers.GetURLs)
 	router.POST("/delete-row", handlers.DeleteRow)
 
-	router.Run(os.Getenv("ROUTER_IP") + ":8080") // Run the web server
+	router.Run(os.Getenv("IP") + ":8080") // Run the web server
 }

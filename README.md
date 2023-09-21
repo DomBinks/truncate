@@ -13,6 +13,6 @@ To run the application:
   - DB_NAME
   - DB_USER
   - DB_PASSWORD
-  - ROUTER_IP
-  - HANDLER_IP
+  - IP
+- Build the Angular frontend in the web folder using "ng build"
 - Use "docker-compose up --build" to build and run the application
