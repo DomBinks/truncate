@@ -1,7 +1,6 @@
 # Truncate
 
 ### A simple URL shortener built with Angular(Typescript) and Gin(Go)
-### Try it out [here](https://truncate.site)
 
 To run the application:
 - Clone the repository
@@ -13,6 +12,7 @@ To run the application:
   - DB_NAME
   - DB_USER
   - DB_PASSWORD
-  - IP
+  - ROUTER
+  - HANDLER
 - Build the Angular frontend in the web folder using "ng build"
 - Use "docker-compose up --build" to build and run the application
