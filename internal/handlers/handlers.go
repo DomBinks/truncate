@@ -31,6 +31,8 @@ func URL(c *gin.Context) {
 
 	shortened := "http://" + os.Getenv("HANDLER") + ":8080/~" + c.Param("shortened") // Get the shortened URL
 
+	log.Println("Getting original URL for " + shortened)
+
 	var original string // Original URL returned from the database
 
 	// Get the original URL from the database, and store in the
@@ -51,6 +53,8 @@ func URL(c *gin.Context) {
 // Handler for getting the correct label and link for the login/logout
 // button
 func GetLogin(c *gin.Context) {
+	log.Println("Getting login info")
+
 	id := helpers.GetID(c) // Get the user's ID
 
 	// Return the label and link in a JSON
@@ -65,6 +69,8 @@ func GetLogin(c *gin.Context) {
 
 // Handler for shortening a URL
 func Shorten(c *gin.Context) {
+	log.Println("Shortening URL")
+
 	db := helpers.GetDatabase() // Get the database
 	defer db.Close()
 
@@ -118,6 +124,8 @@ func Shorten(c *gin.Context) {
 
 // Handler for getting the user's shortened URLS
 func GetURLs(c *gin.Context) {
+	log.Println("Getting user's URLs")
+
 	db := helpers.GetDatabase() // Get the database
 	defer db.Close()
 
@@ -176,6 +184,8 @@ func DeleteRow(c *gin.Context) {
 	}
 
 	shortened := reqData.SHORTENED // Get the shortened URL from the JSON
+
+	log.Println("Deleting shortened URL: " + shortened)
 
 	// Execute the SQL command to remove the row with this original URL
 	_, err = db.Exec("DELETE FROM urls WHERE shortened =$1;", shortened)

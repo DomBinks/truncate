@@ -18,8 +18,8 @@ import (
 )
 
 func main() {
-	/* gin.SetMode(gin.ReleaseMode) // Set Gin to use the release mode */
-	router := gin.Default() // Get a router for the web server
+	gin.SetMode(gin.ReleaseMode) // Set Gin to use the release mode
+	router := gin.Default()      // Get a router for the web server
 
 	// Register custom types to store in cookies
 	gob.Register(map[string]interface{}{})
@@ -56,5 +56,5 @@ func main() {
 	router.POST("/get-urls", handlers.GetURLs)
 	router.POST("/delete-row", handlers.DeleteRow)
 
-	router.Run(os.Getenv("ROUTER") + ":8080") // Run the web server
+	router.Run(os.Getenv("ROUTER") + ":80") // Run the web server
 }

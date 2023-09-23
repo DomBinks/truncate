@@ -34,6 +34,8 @@ func GetDatabase() *sql.DB {
 
 // Get the unique identifier for the current user
 func GetID(c *gin.Context) string {
+	log.Println("Getting user ID")
+
 	session := sessions.Default(c)    // Get the current session
 	profile := session.Get("profile") // Get the session's profile data
 
@@ -53,6 +55,8 @@ func GetID(c *gin.Context) string {
 
 // Generate the random string used to create the shortened URL
 func GenerateShortened() string {
+	log.Println("Generating shortened string")
+
 	// Possible symbols to choose from
 	symbols := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	var shortened string // The string to output
