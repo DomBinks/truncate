@@ -6,8 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.app
-    environment:
-      DB_PASSWORD: golang
     ports:
       - "80:80"
     depends_on:
