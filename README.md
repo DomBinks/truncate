@@ -15,4 +15,5 @@ To run the application:
   - ROUTER
   - HANDLER
 - Build the Angular frontend in the web folder using "ng build"
+- Uncomment the line to use Gin's production mode if deploying in production
 - Use "docker-compose up --build" to build and run the application
