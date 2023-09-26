@@ -29,7 +29,7 @@ func URL(c *gin.Context) {
 	db := helpers.GetDatabase() // Get the database
 	defer db.Close()
 
-	shortened := "http://" + os.Getenv("HANDLER") + "/~" + c.Param("shortened") // Get the shortened URL
+	shortened := "https://" + os.Getenv("HANDLER") + "/~" + c.Param("shortened") // Get the shortened URL
 
 	log.Println("Getting original URL for " + shortened)
 
@@ -104,7 +104,7 @@ func Shorten(c *gin.Context) {
 	}
 
 	// Generate a random string to use as the unique part of the shortened URL
-	shortened := "http://" + os.Getenv("HANDLER") + "/~" + helpers.GenerateShortened()
+	shortened := "https://" + os.Getenv("HANDLER") + "/~" + helpers.GenerateShortened()
 
 	log.Println(original + " shortened to " + shortened)
 

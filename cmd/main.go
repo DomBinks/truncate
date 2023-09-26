@@ -56,5 +56,6 @@ func main() {
 	router.POST("/get-urls", handlers.GetURLs)
 	router.POST("/delete-row", handlers.DeleteRow)
 
-	router.Run(os.Getenv("ROUTER") + ":80") // Run the web server
+	// Run the server
+	err = router.RunTLS(os.Getenv("ROUTER")+":443", "cert.pem", "key.pem")
 }
