@@ -6,6 +6,6 @@ COPY . .
 
 RUN go build cmd/main.go
 
-EXPOSE 80
+EXPOSE 443
 
 CMD ["./main"]

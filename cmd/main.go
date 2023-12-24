@@ -58,4 +58,7 @@ func main() {
 
 	// Run the server
 	err = router.RunTLS(os.Getenv("ROUTER")+":443", "cert.pem", "key.pem")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
