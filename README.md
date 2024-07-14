@@ -15,7 +15,7 @@ To run the application:
   - DB_PASSWORD
   - ROUTER (0.0.0.0 for deployment to the web)
   - HANDLER (website URL)
-- Save and SSL certificate and private key as "cert.pem" and "key.pem"
+- Save SSL certificate and private key as "cert.pem" and "key.pem"
 - Build the Angular frontend in the web folder using "ng build"
   - Requires installing nodejs and npm
 - Use "docker-compose up --build" to build and run the application
